@@ -12,8 +12,11 @@ import danogl.util.Vector2;
 import pepse.world.*;
 import pepse.world.daynight.Night;
 import pepse.world.trees.Forest;
+import pepse.world.trees.Tree;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Entry point for the Pepse game.
@@ -86,7 +89,7 @@ public class PepseGameManager extends GameManager {
 
 		// Create Forest of trees
 		Forest.createForest(0, (int) windowDimensions.x(),
-				terrain, gameObjects());
+				terrain, gameObjects(), Layer.STATIC_OBJECTS);
 
 
 	}

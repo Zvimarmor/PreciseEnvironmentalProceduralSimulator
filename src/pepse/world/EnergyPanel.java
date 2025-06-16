@@ -31,7 +31,7 @@ public class EnergyPanel extends GameObject {
 		super(PANEL_TOP_LEFT, PANEL_SIZE, null);
 		this.energySupplier = energySupplier;
 
-		energyTextRenderable = new TextRenderable("Energy: 100");
+		energyTextRenderable = new TextRenderable("Energy: 100%");
 		energyTextRenderable.setColor(ENERGY_COLOR);
 
 		textObject = new GameObject(
@@ -48,6 +48,6 @@ public class EnergyPanel extends GameObject {
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 		float currentEnergy = energySupplier.get();
-		energyTextRenderable.setString("Energy: " + (int) currentEnergy);
+		energyTextRenderable.setString("Energy: " + (int) currentEnergy + "%");
 	}
 }

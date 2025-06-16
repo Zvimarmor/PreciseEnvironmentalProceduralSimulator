@@ -7,6 +7,7 @@ import danogl.gui.UserInputListener;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.ImageRenderable;
 import danogl.util.Vector2;
+import pepse.world.trees.Fruit;
 
 import java.awt.event.KeyEvent;
 
@@ -14,12 +15,12 @@ import java.awt.event.KeyEvent;
  * Avatar character with energy-based movement, gravity, and animation.
  */
 public class Avatar extends GameObject {
-	private static final float AVATAR_SIZE = 50;
+	private static final float AVATAR_SIZE = 70;
 
 	// Movement constants
 	private static final float MOVE_SPEED = 400;
-	private static final float JUMP_SPEED = -400;
-	private static final float GRAVITY = 400;
+	private static final float JUMP_SPEED = -500;
+	private static final float GRAVITY = 500;
 
 	// Energy system
 	private static final float MAX_ENERGY = 100;
@@ -135,12 +136,20 @@ public class Avatar extends GameObject {
 	@Override
 	public void onCollisionEnter(GameObject other, Collision collision) {
 		super.onCollisionEnter(other, collision);
+
 		if (other.getTag().equals("ground")) {
-			this.transform().setVelocityY(0);
-		}
+		this.transform().setVelocityY(0);
 	}
 
-	/**
+    if (other.getTag().equals("fruit")) {
+		Fruit fruit = (Fruit) other;
+		energy = Math.min(MAX_ENERGY, energy + fruit.getEnergyGain());
+		fruit.consume();
+	}
+}
+
+
+/**
 	 * Restore avatar energy (e.g. from idle state or pickup)
 	 * @param amount amount of energy to restore
 	 */

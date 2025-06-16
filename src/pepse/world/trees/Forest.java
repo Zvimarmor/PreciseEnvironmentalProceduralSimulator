@@ -11,7 +11,7 @@ import java.util.Random;
  */
 public class Forest {
 	private static final float TREE_PLANT_PROBABILITY = 0.1f; // 10% chance
-	private static final int TREE_DISTANCE = 5;
+	private static final int TREE_DISTANCE = 30;
 
 	/**
 	 * Creates trees across the given range of x values, using deterministic seeding.
@@ -22,14 +22,12 @@ public class Forest {
 	 * @param gameObjects The game object collection to add the trees into.
 	 */
 	public static void createForest(int minX, int maxX, Terrain terrain,
-									GameObjectCollection gameObjects) {
+									GameObjectCollection gameObjects, int layer) {
 		Random rand = new Random();
-		int count = 0;
 		for (int x = minX; x < maxX; x += TREE_DISTANCE) {
 			float chance = rand.nextFloat();
 			if (chance < TREE_PLANT_PROBABILITY) {
-				int treeSeed = rand.nextInt();
-				Tree.create(x, terrain, gameObjects, Layer.STATIC_OBJECTS, treeSeed);
+				Tree.create(x, terrain, gameObjects, layer);
 			}
 		}
 	}
