@@ -9,15 +9,15 @@ import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
 
-import world.*;
-import world.daynight.Night;
+import pepse.world.*;
+import pepse.world.daynight.Night;
+import pepse.world.trees.Forest;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Entry point for the Pepse game.
- * Initializes the background, terrain, sun, and day-night elements of the world.
+ * Initializes the background, terrain, sun, and day-night elements of the pepse.world.
  */
 public class PepseGameManager extends GameManager {
 
@@ -43,7 +43,8 @@ public class PepseGameManager extends GameManager {
 			WindowController windowController) {
 
 		// Generate a random seed for terrain generation
-		terrainSeed = new Random().nextInt();
+//		terrainSeed = new Random().nextInt();
+		terrainSeed = 42;
 
 		// Initialize the game engine
 		super.initializeGame(imageReader, soundReader, inputListener, windowController);
@@ -72,6 +73,22 @@ public class PepseGameManager extends GameManager {
 		// Create and add the sun halo
 		GameObject sunHalo = SunHalo.create(sun);
 		gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
+
+		// Create Avatar instance
+		float groundHeight = terrain.groundHeightAt(windowDimensions.x() / 2f);
+		Vector2 avatarInitialLocation = new Vector2(windowDimensions.x() / 2f, groundHeight);
+		Avatar avatar = new Avatar(avatarInitialLocation, inputListener, imageReader);
+		gameObjects().addGameObject(avatar, Layer.DEFAULT);
+
+		// Create Energy Panel
+		pepse.ui.EnergyPanel energyPanel = new pepse.ui.EnergyPanel(gameObjects(), avatar::getEnergy);
+		gameObjects().addGameObject(energyPanel, Layer.UI);
+
+		// Create Forest of trees
+		Forest.createForest(0, (int) windowDimensions.x(),
+				terrain, gameObjects());
+
+
 	}
 
 	/**

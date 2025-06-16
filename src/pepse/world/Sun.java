@@ -1,4 +1,4 @@
-package world;
+package pepse.world;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
@@ -15,9 +15,9 @@ import java.awt.*;
 public class Sun {
 
 	private static final String SUN_TAG = "sun";
-	private static final float SUN_DIAMETER = 100f;
+	private static final float SUN_DIAMETER = 70f;
 	private static final Color SUN_COLOR = Color.YELLOW;
-	private static final float SUN_ORBIT_RADIUS = 300f;
+	private static final float SUN_ORBIT_RADIUS = 360f;
 	private static final float INITIAL_ANGLE = 0f;
 	private static final float FINAL_ANGLE = 360f;
 

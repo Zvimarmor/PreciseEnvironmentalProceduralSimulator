@@ -1,4 +1,4 @@
-package world;
+package pepse.world;
 
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
@@ -21,7 +21,7 @@ public class Terrain {
 	private static final String GROUND_TAG = "ground";
 	private static final float NOISE_FACTOR = BLOCK_SIZE * 7;
 
-	private final NoiseGenerator noise;
+	private final NoiseGenerator noiseGenerator;
 	private final Vector2 windowDimensions;
 	private final float groundHeightAtX0;
 
@@ -34,7 +34,7 @@ public class Terrain {
 	public Terrain(Vector2 windowDimensions, int seed) {
 		this.windowDimensions = windowDimensions;
 		this.groundHeightAtX0 = windowDimensions.y() * 2 / 3;
-		this.noise = new NoiseGenerator((double) seed, (int) groundHeightAtX0);
+		this.noiseGenerator = new NoiseGenerator((double) seed, (int) groundHeightAtX0);
 	}
 
 	/**
@@ -44,7 +44,8 @@ public class Terrain {
 	 * @return The y-coordinate of the terrain at x.
 	 */
 	public float groundHeightAt(float x) {
-		return groundHeightAtX0 - (float) noise.noise(x, NOISE_FACTOR);
+		float noise = (float) noiseGenerator.noise(x, BLOCK_SIZE *7);
+		return groundHeightAtX0 + noise;
 	}
 
 	/**
@@ -56,8 +57,6 @@ public class Terrain {
 	 */
 	public List<Block> createInRange(int minX, int maxX) {
 		List<Block> blocks = new ArrayList<>();
-		Renderable blockRenderable = new RectangleRenderable(
-				ColorSupplier.approximateColor(BASE_GROUND_COLOR));
 
 		int alignedMinX = (int) (Math.floor((float) minX / BLOCK_SIZE) * BLOCK_SIZE);
 		int alignedMaxX = (int) (Math.ceil((float) maxX / BLOCK_SIZE) * BLOCK_SIZE);
@@ -68,6 +67,8 @@ public class Terrain {
 			for (int i = 0; i < TERRAIN_DEPTH; i++) {
 				float y = groundHeight + i * BLOCK_SIZE;
 				Vector2 blockTopLeftCorner = new Vector2(x, y);
+				Renderable blockRenderable = new RectangleRenderable(
+						ColorSupplier.approximateColor(BASE_GROUND_COLOR));
 				Block block = new Block(blockTopLeftCorner, blockRenderable);
 				block.setTag(GROUND_TAG);
 				blocks.add(block);

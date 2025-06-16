@@ -1,4 +1,4 @@
-package world.daynight;
+package pepse.world.daynight;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
