@@ -15,9 +15,10 @@ import java.util.Random;
  */
 public class CloudsManager {
 	private static final float CLOUD_INTERVAL = 10f;
-	private static final float CLOUD_MIN_X = -350f;
-	private static final float CLOUD_MAX_X_OFFSET = 300f;
-	private static final float CLOUD_Y_HEIGHT = 100f;
+	private static final float CLOUD_MIN_X = -550f;
+	private static final float CLOUD_MAX_X_OFFSET = 500f;
+	private static final float CLOUD_MIN_HEIGHT = 20f;
+	private static final float CLOUD_MAX_HEIGHT = 300f;
 
 	private final GameObjectCollection gameObjects;
 	private final Vector2 windowDimensions;
@@ -41,19 +42,16 @@ public class CloudsManager {
 				CLOUD_INTERVAL,
 				true,
 				() -> {
-					Vector2 center = randomCloudPosition();
+					float cloudHeight = CLOUD_MIN_HEIGHT + (CLOUD_MAX_HEIGHT - CLOUD_MIN_HEIGHT) * random.nextFloat();
+					Vector2 center = new Vector2(CLOUD_MIN_X, cloudHeight);
 					Cloud.createCloud(center, gameObjects, layer);
 					cloudCenters.add(center);
 				}
 		);
 	}
 
-	public void triggerRainFromClouds() {
-		RainManager.triggerRain(cloudCenters, gameObjects);
-	}
+//	public void triggerRainFromClouds() {
+//		RainManager.triggerRain(cloudCenters, gameObjects);
+//	}
 
-	private Vector2 randomCloudPosition() {
-		float x = CLOUD_MIN_X + random.nextFloat() * CLOUD_MAX_X_OFFSET;
-		return new Vector2(x, CLOUD_Y_HEIGHT);
-	}
 }

@@ -14,7 +14,7 @@ import pepse.world.*;
 import pepse.world.daynight.Night;
 import pepse.world.trees.Forest;
 import pepse.world.weather.CloudsManager;
-import pepse.world.weather.RainManager;
+//import pepse.world.weather.RainManager;
 
 import java.util.List;
 
@@ -96,10 +96,9 @@ public class PepseGameManager extends GameManager {
 				terrain, gameObjects(), Layer.STATIC_OBJECTS);
 
 		// Create clouds
-		Vector2 cloudInitialLocation = new Vector2(windowDimensions.x() / 2f,  windowDimensions.y() * 1/3);
 		CloudsManager cloudsManager = new CloudsManager(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);
 		cloudsManager.startSpawningClouds();
-		avatar.setOnJumpCallback(cloudsManager::triggerRainFromClouds);
+//		avatar.setOnJumpCallback(cloudsManager::triggerRainFromClouds);
 
 
 

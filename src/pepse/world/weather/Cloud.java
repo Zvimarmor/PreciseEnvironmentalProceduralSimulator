@@ -19,7 +19,7 @@ import java.util.List;
 public class Cloud {
 	private static final Color BASE_CLOUD_COLOR = new Color(255, 255, 255);
 	private static final int CLOUD_SIZE = 30;
-	private static final float CLOUD_SPEED = 0.25f;
+	private static final float CLOUD_SPEED = 0.05f;
 
 	/**
 	 * Create a cloud at a given position using a fixed shape matrix.
