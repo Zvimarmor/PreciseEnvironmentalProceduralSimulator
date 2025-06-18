@@ -1,6 +1,7 @@
 package pepse.world;
 
 import danogl.GameObject;
+import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Collision;
 import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
@@ -15,7 +16,7 @@ import java.awt.event.KeyEvent;
  * Avatar character with energy-based movement, gravity, and animation.
  */
 public class Avatar extends GameObject {
-	private static final float AVATAR_SIZE = 70;
+	private static final float AVATAR_SIZE = 50;
 
 	// Movement constants
 	private static final float MOVE_SPEED = 400;
@@ -35,6 +36,7 @@ public class Avatar extends GameObject {
 	private final AnimationRenderable runAnimation;
 
 	private boolean isFacingLeft = false;
+	private Runnable onJumpCallback = null;
 
 	/**
 	 * Constructor for the Avatar
@@ -113,6 +115,10 @@ public class Avatar extends GameObject {
 				&& energy >= JUMP_ENERGY_COST) {
 			transform().setVelocityY(JUMP_SPEED);
 			energy -= JUMP_ENERGY_COST;
+
+			if (onJumpCallback != null) {
+				onJumpCallback.run();
+			}
 		}
 
 		// Update energy if idle
@@ -143,8 +149,11 @@ public class Avatar extends GameObject {
 
     if (other.getTag().equals("fruit")) {
 		Fruit fruit = (Fruit) other;
-		energy = Math.min(MAX_ENERGY, energy + fruit.getEnergyGain());
-		fruit.consume();
+		energy += fruit.getEnergyGain();
+		if (energy >= MAX_ENERGY) {
+			energy = MAX_ENERGY;
+		}
+		((Fruit) other).consume();
 	}
 }
 
@@ -171,5 +180,10 @@ public class Avatar extends GameObject {
 	 */
 	public float getEnergy() {
 		return energy;
+	}
+
+
+	public void setOnJumpCallback(Runnable callback) {
+		this.onJumpCallback = callback;
 	}
 }

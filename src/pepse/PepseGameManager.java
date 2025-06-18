@@ -3,6 +3,7 @@ package pepse;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
+import danogl.components.CoordinateSpace;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
@@ -12,11 +13,10 @@ import danogl.util.Vector2;
 import pepse.world.*;
 import pepse.world.daynight.Night;
 import pepse.world.trees.Forest;
-import pepse.world.trees.Tree;
+import pepse.world.weather.CloudsManager;
+import pepse.world.weather.RainManager;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Entry point for the Pepse game.
@@ -56,6 +56,7 @@ public class PepseGameManager extends GameManager {
 
 		// Create and add the sky
 		GameObject sky = Sky.create(windowDimensions);
+		sky.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		gameObjects().addGameObject(sky, Layer.BACKGROUND);
 
 		// Create and add the terrain
@@ -67,14 +68,17 @@ public class PepseGameManager extends GameManager {
 
 		// Create and add the day-night overlay
 		GameObject night = Night.create(windowDimensions, CYCLE_LENGTH);
+		night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		gameObjects().addGameObject(night, Layer.FOREGROUND);
 
 		// Create and add the sun
 		GameObject sun = Sun.create(windowDimensions, CYCLE_LENGTH);
+		sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		gameObjects().addGameObject(sun, Layer.BACKGROUND);
 
 		// Create and add the sun halo
 		GameObject sunHalo = SunHalo.create(sun);
+		sunHalo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
 
 		// Create Avatar instance
@@ -90,6 +94,14 @@ public class PepseGameManager extends GameManager {
 		// Create Forest of trees
 		Forest.createForest(0, (int) windowDimensions.x(),
 				terrain, gameObjects(), Layer.STATIC_OBJECTS);
+
+		// Create clouds
+		Vector2 cloudInitialLocation = new Vector2(windowDimensions.x() / 2f,  windowDimensions.y() * 1/3);
+		CloudsManager cloudsManager = new CloudsManager(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);
+		cloudsManager.startSpawningClouds();
+		avatar.setOnJumpCallback(cloudsManager::triggerRainFromClouds);
+
+
 
 
 	}

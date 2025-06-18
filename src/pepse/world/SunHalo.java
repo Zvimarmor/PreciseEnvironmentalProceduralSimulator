@@ -15,7 +15,7 @@ public class SunHalo {
 
 	private static final String SUN_HALO_TAG = "sunHalo";
 	private static final Color HALO_COLOR = new Color(255, 255, 0, 20); // semi-transparent yellow
-	private static final float HALO_DIAMETER = 250f;
+	private static final float HALO_DIAMETER = 150f;
 
 	/**
 	 * Creates a halo GameObject that tracks and surrounds the sun.

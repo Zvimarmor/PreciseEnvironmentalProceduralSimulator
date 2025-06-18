@@ -21,11 +21,11 @@ public class Tree {
 	private static final Color TRUNK_COLOR = new Color(100, 50, 20);
 	private static final int TRUNK_WIDTH = 30;
 	private static final int LEAF_SIZE = 25;
-	private static final int MIN_TRUNK_HEIGHT = 200;
-	private static final int MAX_TRUNK_HEIGHT = 300;
+	private static final int MIN_TRUNK_HEIGHT = 150;
+	private static final int MAX_TRUNK_HEIGHT = 200;
 	private static final Vector2 LEAF_SPREAD_DIMENSION = new Vector2(150, 200);
-	private static final float LEAF_PROBABILITY = 0.7f;
-	private static final float FRUIT_PROBABILITY = 0.1f;
+	private static final float LEAF_PROBABILITY = 0.8f;
+	private static final float FRUIT_PROBABILITY = 0.2f;
 
 	/**
 	 * Create a tree at a given x-coordinate based on terrain height.
@@ -40,52 +40,59 @@ public class Tree {
 							  int layer) {
 		Random rand = new Random();
 
-		int trunkHeight = MIN_TRUNK_HEIGHT + rand.nextInt(MAX_TRUNK_HEIGHT - MIN_TRUNK_HEIGHT + 1);
+		float trunkHeight = rand.nextInt(MIN_TRUNK_HEIGHT, MAX_TRUNK_HEIGHT);
 		float groundHeight = terrain.groundHeightAt(x);
-		Vector2 trunkTop = new Vector2(x, groundHeight - trunkHeight);
+		float trunkTop = groundHeight - trunkHeight;
 
 		// Create and add the trunk
-		GameObject trunk = new GameObject(new Vector2(x, trunkTop.y()),
+		GameObject trunk = new GameObject(new Vector2(x, trunkTop),
 				new Vector2(TRUNK_WIDTH, trunkHeight),
 				new RectangleRenderable(ColorSupplier.approximateColor(TRUNK_COLOR)));
 		trunk.physics().setMass(GameObjectPhysics.IMMOVABLE_MASS);
-		trunk.physics().preventIntersectionsFromDirection(Vector2.UP);
+		trunk.physics().preventIntersectionsFromDirection(Vector2.ZERO);
 		gameObjects.addGameObject(trunk, layer);
 
 		// Create list of all valid leaf positions (excluding trunk area)
 		int cols = (int) (LEAF_SPREAD_DIMENSION.x() / LEAF_SIZE);
 		int rows = (int) (LEAF_SPREAD_DIMENSION.y() / LEAF_SIZE);
 		float startX = x - LEAF_SPREAD_DIMENSION.x() / 2;
-		float startY = trunkTop.y() - LEAF_SPREAD_DIMENSION.y() / 2;
+		float startY = trunkTop - LEAF_SPREAD_DIMENSION.y() / 2;
 
 		ArrayList<Vector2> possibleLeafPositions = new ArrayList<>();
-		System.out.println( "rows:" + rows + " cols:" + cols);
+		ArrayList<Vector2> possibleFruitPositions = new ArrayList<>();
+
 		for (int row = 0; row < rows; row++) {
 			for (int col = 0; col < cols; col++) {
-				float leafX = startX + col * LEAF_SIZE;
-				float leafY = startY + row * LEAF_SIZE;
+				float px = startX + col * LEAF_SIZE;
+				float py = startY + row * LEAF_SIZE;
+				Vector2 pos = new Vector2(px, py);
 
-				// Skip positions overlapping the trunk
-				if (leafX + LEAF_SIZE > x && leafX < x + LEAF_SIZE) {
-					continue;
+				if (rand.nextBoolean()) {
+					possibleLeafPositions.add(pos);
+				} else {
+					possibleFruitPositions.add(pos);
 				}
-				possibleLeafPositions.add(new Vector2(leafX, leafY));
 			}
 		}
 
-		// Shuffle and select a subset according to probability
+		// Shuffle and pick leaf positions
 		Collections.shuffle(possibleLeafPositions, rand);
-		int totalPossible = possibleLeafPositions.size();
-		int numLeaves = (int) (LEAF_PROBABILITY * totalPossible);
-
+		int numLeaves = (int) (LEAF_PROBABILITY * possibleLeafPositions.size());
 		for (int i = 0; i < numLeaves; i++) {
 			Vector2 pos = possibleLeafPositions.get(i);
 			Leaf leaf = new Leaf(pos);
 			gameObjects.addGameObject(leaf, layer);
-			if (rand.nextFloat() < FRUIT_PROBABILITY) {
-				Fruit fruit = new Fruit(pos, gameObjects);
-				gameObjects.addGameObject(fruit, Layer.STATIC_OBJECTS);
-			}
 		}
+
+		// Shuffle and pick fruit positions
+		Collections.shuffle(possibleFruitPositions, rand);
+		int numFruits = (int) (FRUIT_PROBABILITY * possibleFruitPositions.size());
+		for (int i = 0; i < numFruits; i++) {
+			Vector2 pos = possibleFruitPositions.get(i);
+			Fruit fruit = new Fruit(pos, gameObjects);
+			gameObjects.addGameObject(fruit, Layer.STATIC_OBJECTS);
+		}
+
 	}
+
 }

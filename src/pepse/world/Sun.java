@@ -17,7 +17,7 @@ public class Sun {
 	private static final String SUN_TAG = "sun";
 	private static final float SUN_DIAMETER = 70f;
 	private static final Color SUN_COLOR = Color.YELLOW;
-	private static final float SUN_ORBIT_RADIUS = 360f;
+	private static final float SUN_ORBIT_RADIUS = 300f;
 	private static final float INITIAL_ANGLE = 0f;
 	private static final float FINAL_ANGLE = 360f;
 
@@ -31,7 +31,7 @@ public class Sun {
 	public static GameObject create(Vector2 windowDimensions, float cycleLength) {
 		Vector2 sunOrbitCenter = new Vector2(
 				windowDimensions.x() / 2f,
-				windowDimensions.y() / 3f
+				windowDimensions.y() / 2f
 		);
 		Vector2 initialSunCenter = new Vector2(
 				sunOrbitCenter.x(),

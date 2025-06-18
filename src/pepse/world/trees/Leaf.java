@@ -17,8 +17,8 @@ import java.util.Random;
 public class Leaf extends GameObject {
 	private static final Color LEAF_COLOR = new Color(50, 200, 30);
 	private static final Vector2 LEAF_SIZE = new Vector2(25, 25);
-	private static final float MIN_ANGLE = -10f;
-	private static final float MAX_ANGLE = 10f;
+	private static final float MIN_ANGLE = -5f;
+	private static final float MAX_ANGLE = 5f;
 	private static final float MIN_WIDTH_FACTOR = 0.8f;
 	private static final float MAX_WIDTH_FACTOR = 1.2f;
 	private static final float DURATION = 0.5f;
