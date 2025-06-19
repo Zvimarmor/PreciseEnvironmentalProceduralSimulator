@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Random;
 
 /**
- * A class responsible for generating a single tree with a trunk and several leaves.
+ * Generates a single tree consisting of a trunk, leaves, and optional fruit.
  */
 public class Tree {
 	private static final Color TRUNK_COLOR = new Color(100, 50, 20);
@@ -28,12 +28,12 @@ public class Tree {
 	private static final float FRUIT_PROBABILITY = 0.2f;
 
 	/**
-	 * Create a tree at a given x-coordinate based on terrain height.
+	 * Create a tree at the specified x-coordinate.
 	 *
-	 * @param x The x position to plant the tree.
-	 * @param terrain The terrain object used to determine ground height.
-	 * @param gameObjects The collection to which all parts of the tree are added.
-	 * @param layer The layer to draw the tree on.
+	 * @param x           X-position to plant the tree.
+	 * @param terrain     Terrain used to find ground height.
+	 * @param gameObjects The collection to place trunk, leaves, and fruits.
+	 * @param layer       Rendering layer to use.
 	 */
 	public static void create(float x, Terrain terrain,
 							  GameObjectCollection gameObjects,
@@ -44,15 +44,17 @@ public class Tree {
 		float groundHeight = terrain.groundHeightAt(x);
 		float trunkTop = groundHeight - trunkHeight;
 
-		// Create and add the trunk
-		GameObject trunk = new GameObject(new Vector2(x, trunkTop),
+		// Create the trunk and place it
+		GameObject trunk = new GameObject(
+				new Vector2(x, trunkTop),
 				new Vector2(TRUNK_WIDTH, trunkHeight),
-				new RectangleRenderable(ColorSupplier.approximateColor(TRUNK_COLOR)));
+				new RectangleRenderable(ColorSupplier.approximateColor(TRUNK_COLOR))
+		);
 		trunk.physics().setMass(GameObjectPhysics.IMMOVABLE_MASS);
 		trunk.physics().preventIntersectionsFromDirection(Vector2.ZERO);
 		gameObjects.addGameObject(trunk, layer);
 
-		// Create list of all valid leaf positions (excluding trunk area)
+		// Generate grid of possible positions for leaves and fruit
 		int cols = (int) (LEAF_SPREAD_DIMENSION.x() / LEAF_SIZE);
 		int rows = (int) (LEAF_SPREAD_DIMENSION.y() / LEAF_SIZE);
 		float startX = x - LEAF_SPREAD_DIMENSION.x() / 2;
@@ -66,7 +68,6 @@ public class Tree {
 				float px = startX + col * LEAF_SIZE;
 				float py = startY + row * LEAF_SIZE;
 				Vector2 pos = new Vector2(px, py);
-
 				if (rand.nextBoolean()) {
 					possibleLeafPositions.add(pos);
 				} else {
@@ -75,24 +76,20 @@ public class Tree {
 			}
 		}
 
-		// Shuffle and pick leaf positions
+		// Add leaves
 		Collections.shuffle(possibleLeafPositions, rand);
 		int numLeaves = (int) (LEAF_PROBABILITY * possibleLeafPositions.size());
 		for (int i = 0; i < numLeaves; i++) {
-			Vector2 pos = possibleLeafPositions.get(i);
-			Leaf leaf = new Leaf(pos);
+			Leaf leaf = new Leaf(possibleLeafPositions.get(i));
 			gameObjects.addGameObject(leaf, layer);
 		}
 
-		// Shuffle and pick fruit positions
+		// Add fruits
 		Collections.shuffle(possibleFruitPositions, rand);
 		int numFruits = (int) (FRUIT_PROBABILITY * possibleFruitPositions.size());
 		for (int i = 0; i < numFruits; i++) {
-			Vector2 pos = possibleFruitPositions.get(i);
-			Fruit fruit = new Fruit(pos, gameObjects);
+			Fruit fruit = new Fruit(possibleFruitPositions.get(i), gameObjects);
 			gameObjects.addGameObject(fruit, Layer.STATIC_OBJECTS);
 		}
-
 	}
-
 }

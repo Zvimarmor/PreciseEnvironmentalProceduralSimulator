@@ -10,22 +10,22 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 /**
- * This class creates a black transparent square that darkens the screen
- * based on a day-night cycle using a transition.
+ * Creates a dark transparent overlay that simulates a day-night cycle
+ * by changing its opacity periodically.
  */
 public class Night {
 
-	private static final float MIDNIGHT_OPACITY = 0.5f;
+	private static final float MIDNIGHT_OPACITY = 0.5f; // Max darkness level
 	private static final String NIGHT_TAG = "night";
 	private static final Color NIGHT_COLOR = Color.BLACK;
 	private static final float INITIAL_OPACITY = 0f;
 
 	/**
-	 * Creates a night GameObject which darkens the screen during nighttime.
+	 * Creates a GameObject representing the night overlay.
 	 *
-	 * @param windowDimensions Vector2 representing the dimensions of the screen.
-	 * @param cycleLength      The total time (in seconds) of a full day-night cycle.
-	 * @return GameObject that simulates nighttime.
+	 * @param windowDimensions Dimensions of the window in pixels.
+	 * @param cycleLength The duration (in seconds) of a full day-night cycle.
+	 * @return A GameObject that changes opacity over time to simulate night.
 	 */
 	public static GameObject create(Vector2 windowDimensions, float cycleLength) {
 		Renderable nightRenderable = new RectangleRenderable(NIGHT_COLOR);
@@ -33,6 +33,7 @@ public class Night {
 		night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		night.setTag(NIGHT_TAG);
 
+		// Transition controls the opacity between day and night
 		new Transition<>(
 				night,
 				night.renderer()::setOpaqueness,

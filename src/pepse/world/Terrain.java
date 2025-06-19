@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class Terrain {
 
+	/** Size of each block in pixels. */
 	public static final int BLOCK_SIZE = 30;
 	private static final int TERRAIN_DEPTH = 20;
 	private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
@@ -44,7 +45,7 @@ public class Terrain {
 	 * @return The y-coordinate of the terrain at x.
 	 */
 	public float groundHeightAt(float x) {
-		float noise = (float) noiseGenerator.noise(x, BLOCK_SIZE *7);
+		float noise = (float) noiseGenerator.noise(x, NOISE_FACTOR);
 		return groundHeightAtX0 + noise;
 	}
 
@@ -58,12 +59,14 @@ public class Terrain {
 	public List<Block> createInRange(int minX, int maxX) {
 		List<Block> blocks = new ArrayList<>();
 
+		// Align the range to block size grid
 		int alignedMinX = (int) (Math.floor((float) minX / BLOCK_SIZE) * BLOCK_SIZE);
 		int alignedMaxX = (int) (Math.ceil((float) maxX / BLOCK_SIZE) * BLOCK_SIZE);
 
 		for (int x = alignedMinX; x <= alignedMaxX; x += BLOCK_SIZE) {
 			float groundHeight = (float) (Math.floor(groundHeightAt(x) / BLOCK_SIZE) * BLOCK_SIZE);
 
+			// Stack terrain blocks downward from groundHeight
 			for (int i = 0; i < TERRAIN_DEPTH; i++) {
 				float y = groundHeight + i * BLOCK_SIZE;
 				Vector2 blockTopLeftCorner = new Vector2(x, y);

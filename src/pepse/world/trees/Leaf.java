@@ -7,7 +7,6 @@ import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
 import danogl.components.ScheduledTask;
 
-
 import java.awt.*;
 import java.util.Random;
 
@@ -44,8 +43,8 @@ public class Leaf extends GameObject {
 	 * Adds transitions to simulate wind swaying and leaf width changes.
 	 */
 	private void initializeWindTransitions() {
-		// Swaying angle
-		new Transition<Float>(
+		// Swaying rotation using a sinusoidal-like oscillation
+		new Transition<>(
 				this,
 				angle -> this.renderer().setRenderableAngle(angle),
 				MIN_ANGLE,
@@ -56,8 +55,8 @@ public class Leaf extends GameObject {
 				null
 		);
 
-		// Width flutter
-		new Transition<Float>(
+		// Fluttering width effect using horizontal scale transitions
+		new Transition<>(
 				this,
 				scale -> this.setDimensions(new Vector2(LEAF_SIZE.x() * scale, LEAF_SIZE.y())),
 				MIN_WIDTH_FACTOR,

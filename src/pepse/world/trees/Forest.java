@@ -1,32 +1,31 @@
 package pepse.world.trees;
 
 import danogl.collisions.GameObjectCollection;
-import danogl.collisions.Layer;
 import pepse.world.Terrain;
 
 import java.util.Random;
 
 /**
- * A utility class to generate a forest of trees across the game world.
+ * A utility class responsible for planting trees in a forest-like pattern.
  */
 public class Forest {
-	private static final float TREE_PLANT_PROBABILITY = 0.1f; // 10% chance
-	private static final int TREE_DISTANCE = 30;
+	private static final float TREE_PLANT_PROBABILITY = 0.1f; // 10% chance to place a tree
+	private static final int TREE_DISTANCE = 30; // Space between tree attempts
 
 	/**
-	 * Creates trees across the given range of x values, using deterministic seeding.
+	 * Plants a forest in the range [minX, maxX) based on a fixed spacing and random probability.
 	 *
-	 * @param minX        The starting x value.
-	 * @param maxX        The ending x value (exclusive).
-	 * @param terrain     The terrain object to determine ground height.
-	 * @param gameObjects The game object collection to add the trees into.
+	 * @param minX Start x-coordinate of forest.
+	 * @param maxX End x-coordinate (exclusive).
+	 * @param terrain Terrain to determine the ground height at each x.
+	 * @param gameObjects Where to place the tree game objects.
+	 * @param layer The rendering layer to use for the trees.
 	 */
 	public static void createForest(int minX, int maxX, Terrain terrain,
 									GameObjectCollection gameObjects, int layer) {
 		Random rand = new Random();
 		for (int x = minX; x < maxX; x += TREE_DISTANCE) {
-			float chance = rand.nextFloat();
-			if (chance < TREE_PLANT_PROBABILITY) {
+			if (rand.nextFloat() < TREE_PLANT_PROBABILITY) {
 				Tree.create(x, terrain, gameObjects, layer);
 			}
 		}

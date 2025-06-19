@@ -14,13 +14,13 @@ import pepse.world.*;
 import pepse.world.daynight.Night;
 import pepse.world.trees.Forest;
 import pepse.world.weather.CloudsManager;
-//import pepse.world.weather.RainManager;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Entry point for the Pepse game.
- * Initializes the background, terrain, sun, and day-night elements of the pepse.world.
+ * Initializes the background, terrain, sun, sky effects, avatar, UI, and weather.
  */
 public class PepseGameManager extends GameManager {
 
@@ -31,12 +31,12 @@ public class PepseGameManager extends GameManager {
 	private static final float CYCLE_LENGTH = 30f;
 
 	/**
-	 * Initializes the Pepse game. Sets up sky, terrain, sun, halo, and night overlay.
+	 * Initializes all major game components.
 	 *
-	 * @param imageReader     Utility to read image files.
-	 * @param soundReader     Utility to read sound files.
-	 * @param inputListener   Utility to handle user input.
-	 * @param windowController Manages the game window and its properties.
+	 * @param imageReader      Utility for reading images from assets.
+	 * @param soundReader      Utility for reading sounds (not used in this example).
+	 * @param inputListener    Captures user input for avatar movement.
+	 * @param windowController Manages the game window.
 	 */
 	@Override
 	public void initializeGame(
@@ -45,70 +45,69 @@ public class PepseGameManager extends GameManager {
 			UserInputListener inputListener,
 			WindowController windowController) {
 
-		// Generate a random seed for terrain generation
-//		terrainSeed = new Random().nextInt();
-		terrainSeed = 42;
+		// Generate a new seed for noise-based terrain generation
+		terrainSeed = new Random().nextInt();
 
-		// Initialize the game engine
+		// Standard engine init
 		super.initializeGame(imageReader, soundReader, inputListener, windowController);
 
 		Vector2 windowDimensions = windowController.getWindowDimensions();
 
-		// Create and add the sky
+		// ---------- Sky ----------
 		GameObject sky = Sky.create(windowDimensions);
 		sky.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		gameObjects().addGameObject(sky, Layer.BACKGROUND);
 
-		// Create and add the terrain
+		// ---------- Terrain ----------
 		Terrain terrain = new Terrain(windowDimensions, terrainSeed);
 		List<Block> groundBlocks = terrain.createInRange(0, (int) windowDimensions.x());
 		for (Block block : groundBlocks) {
 			gameObjects().addGameObject(block, Layer.STATIC_OBJECTS);
 		}
 
-		// Create and add the day-night overlay
+		// ---------- Night overlay ----------
 		GameObject night = Night.create(windowDimensions, CYCLE_LENGTH);
 		night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		gameObjects().addGameObject(night, Layer.FOREGROUND);
 
-		// Create and add the sun
+		// ---------- Sun ----------
 		GameObject sun = Sun.create(windowDimensions, CYCLE_LENGTH);
 		sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		gameObjects().addGameObject(sun, Layer.BACKGROUND);
 
-		// Create and add the sun halo
+		// ---------- Sun halo ----------
 		GameObject sunHalo = SunHalo.create(sun);
 		sunHalo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
 
-		// Create Avatar instance
+		// ---------- Avatar ----------
 		float groundHeight = terrain.groundHeightAt(windowDimensions.x() / 2f);
 		Vector2 avatarInitialLocation = new Vector2(windowDimensions.x() / 2f, groundHeight);
 		Avatar avatar = new Avatar(avatarInitialLocation, inputListener, imageReader);
 		gameObjects().addGameObject(avatar, Layer.DEFAULT);
 
-		// Create Energy Panel
-		pepse.ui.EnergyPanel energyPanel = new pepse.ui.EnergyPanel(gameObjects(), avatar::getEnergy);
+		// ---------- Energy Panel UI ----------
+		EnergyPanel energyPanel = new EnergyPanel(gameObjects(), avatar::getEnergy);
 		gameObjects().addGameObject(energyPanel, Layer.UI);
 
-		// Create Forest of trees
+		// ---------- Forest ----------
 		Forest.createForest(0, (int) windowDimensions.x(),
 				terrain, gameObjects(), Layer.STATIC_OBJECTS);
 
-		// Create clouds
-		CloudsManager cloudsManager = new CloudsManager(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);
+		// ---------- Clouds + Rain ----------
+		CloudsManager cloudsManager = new CloudsManager(
+				gameObjects(),
+				windowDimensions,
+				Layer.BACKGROUND
+		);
 		cloudsManager.startSpawningClouds();
-//		avatar.setOnJumpCallback(cloudsManager::triggerRainFromClouds);
-
-
-
-
+		avatar.addJumpObserver(cloudsManager); // attach cloud rain to jump event
 	}
 
 	/**
-	 * Launches the game.
+	 * Launches the game via the game manager.
 	 *
-	 * @param args Command-line arguments (unused).
+	 * @param args Command-line arguments (not used).
 	 */
 	public static void main(String[] args) {
 		new PepseGameManager().run();

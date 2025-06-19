@@ -45,6 +45,7 @@ public class Sun {
 		sun.setTag(SUN_TAG);
 		sun.setCenter(initialSunCenter);
 
+		// Transition to rotate the sun around the center
 		new Transition<>(
 				sun,
 				angle -> sun.setCenter(
