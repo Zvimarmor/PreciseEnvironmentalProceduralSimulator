@@ -11,67 +11,64 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents the terrain system, generating procedural ground blocks.
+ * Responsible for generating terrain blocks in a procedurally defined landscape.
  */
 public class Terrain {
-
-	/** Size of each block in pixels. */
+	/** Width and height of a single terrain block. */
 	public static final int BLOCK_SIZE = 30;
+
 	private static final int TERRAIN_DEPTH = 20;
 	private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
 	private static final String GROUND_TAG = "ground";
-	private static final float NOISE_FACTOR = BLOCK_SIZE * 7;
 
-	private final NoiseGenerator noiseGenerator;
+	private final NoiseGenerator noise;
 	private final Vector2 windowDimensions;
 	private final float groundHeightAtX0;
 
 	/**
-	 * Constructs a Terrain instance, initializing the NoiseGenerator and base terrain height.
+	 * Constructs a Terrain instance with the given screen size and seed.
 	 *
-	 * @param windowDimensions The dimensions of the game window.
-	 * @param seed             Seed value for deterministic terrain generation.
+	 * @param windowDimensions Dimensions of the game window.
+	 * @param seed             Seed for terrain noise generation.
 	 */
 	public Terrain(Vector2 windowDimensions, int seed) {
 		this.windowDimensions = windowDimensions;
-		this.groundHeightAtX0 = windowDimensions.y() * 2 / 3;
-		this.noiseGenerator = new NoiseGenerator((double) seed, (int) groundHeightAtX0);
+		this.groundHeightAtX0 = windowDimensions.y() * 2 / 3f;
+		this.noise = new NoiseGenerator((double) seed, (int) groundHeightAtX0);
 	}
 
 	/**
-	 * Returns the terrain height at a given x-coordinate.
+	 * Computes terrain height (y value) at a specific x-coordinate.
 	 *
-	 * @param x The x-coordinate to query.
-	 * @return The y-coordinate of the terrain at x.
+	 * @param x The x-coordinate.
+	 * @return The corresponding ground height.
 	 */
 	public float groundHeightAt(float x) {
-		float noise = (float) noiseGenerator.noise(x, NOISE_FACTOR);
-		return groundHeightAtX0 + noise;
+		return groundHeightAtX0 - (float) noise.noise(x, BLOCK_SIZE * 7);
 	}
 
 	/**
-	 * Generates ground blocks in a specified horizontal range, based on terrain height at each point.
+	 * Generates a list of terrain blocks in a horizontal range.
 	 *
 	 * @param minX The minimum x-coordinate (inclusive).
 	 * @param maxX The maximum x-coordinate (inclusive).
-	 * @return A list of Block objects representing the terrain in the specified range.
+	 * @return A list of Block objects representing terrain in the given range.
 	 */
 	public List<Block> createInRange(int minX, int maxX) {
 		List<Block> blocks = new ArrayList<>();
 
-		// Align the range to block size grid
-		int alignedMinX = (int) (Math.floor((float) minX / BLOCK_SIZE) * BLOCK_SIZE);
-		int alignedMaxX = (int) (Math.ceil((float) maxX / BLOCK_SIZE) * BLOCK_SIZE);
+		int alignedMinX = (int) Math.floor((float) minX / BLOCK_SIZE) * BLOCK_SIZE;
+		int alignedMaxX = (int) Math.ceil((float) maxX / BLOCK_SIZE) * BLOCK_SIZE;
 
 		for (int x = alignedMinX; x <= alignedMaxX; x += BLOCK_SIZE) {
-			float groundHeight = (float) (Math.floor(groundHeightAt(x) / BLOCK_SIZE) * BLOCK_SIZE);
+			float groundHeight = (float)
+					(Math.floor(groundHeightAt(x) / BLOCK_SIZE) * BLOCK_SIZE);
 
-			// Stack terrain blocks downward from groundHeight
 			for (int i = 0; i < TERRAIN_DEPTH; i++) {
 				float y = groundHeight + i * BLOCK_SIZE;
 				Vector2 blockTopLeftCorner = new Vector2(x, y);
-				Renderable blockRenderable = new RectangleRenderable(
-						ColorSupplier.approximateColor(BASE_GROUND_COLOR));
+				Renderable blockRenderable =
+						new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
 				Block block = new Block(blockTopLeftCorner, blockRenderable);
 				block.setTag(GROUND_TAG);
 				blocks.add(block);

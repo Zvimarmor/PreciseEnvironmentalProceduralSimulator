@@ -8,24 +8,23 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 /**
- * Utility class for creating the sky background in the game.
+ * A utility class for creating the static sky background object.
  */
 public class Sky {
-
-	private static final Color BASIC_SKY_COLOR = Color.decode("#80C6E5"); // Sky blue color
+	private static final Color SKY_COLOR = Color.decode("#80C6E5");
+	private static final String SKY_TAG = "sky";
 
 	/**
-	 * Creates a sky object that fills the entire window.
+	 * Creates the sky GameObject that fills the background.
 	 *
 	 * @param windowDimensions The dimensions of the game window.
 	 * @return A GameObject representing the sky.
 	 */
 	public static GameObject create(Vector2 windowDimensions) {
 		GameObject sky = new GameObject(Vector2.ZERO, windowDimensions,
-				new RectangleRenderable(BASIC_SKY_COLOR));
+				new RectangleRenderable(SKY_COLOR));
 		sky.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-		sky.setTag("sky");
-
+		sky.setTag(SKY_TAG);
 		return sky;
 	}
 }

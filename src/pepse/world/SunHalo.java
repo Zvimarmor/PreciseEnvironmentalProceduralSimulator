@@ -9,32 +9,31 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 /**
- * A glowing halo that surrounds the sun and follows its movement.
+ * A utility class for creating a glowing halo that surrounds the sun and follows its movement.
  */
 public class SunHalo {
-
 	private static final String SUN_HALO_TAG = "sunHalo";
-	private static final Color HALO_COLOR = new Color(255, 255, 0, 20); // semi-transparent yellow
-	private static final float HALO_DIAMETER = 150f;
+	private static final Color HALO_COLOR = new Color(255, 255, 0, 20);
+	private static final float HALO_DIAMETER = 250f;
 
 	/**
-	 * Creates a halo GameObject that tracks and surrounds the sun.
+	 * Creates a halo GameObject that tracks the sun.
 	 *
-	 * @param sun The GameObject representing the sun.
+	 * @param sun The sun GameObject to follow.
 	 * @return A GameObject representing the sun's halo.
 	 */
 	public static GameObject create(GameObject sun) {
-		Renderable haloRenderable = new OvalRenderable(HALO_COLOR);
-		GameObject sunHalo = new GameObject(Vector2.ZERO,
-				new Vector2(HALO_DIAMETER, HALO_DIAMETER), haloRenderable);
+		Renderable renderable = new OvalRenderable(HALO_COLOR);
+		GameObject halo = new GameObject(Vector2.ZERO,
+				new Vector2(HALO_DIAMETER, HALO_DIAMETER),
+				renderable);
 
-		sunHalo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-		sunHalo.setTag(SUN_HALO_TAG);
-		sunHalo.setCenter(sun.getCenter());
+		halo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+		halo.setTag(SUN_HALO_TAG);
+		halo.setCenter(sun.getCenter());
 
-		// Synchronize halo position with sun position each frame
-		sunHalo.addComponent(deltaTime -> sunHalo.setCenter(sun.getCenter()));
+		halo.addComponent(deltaTime -> halo.setCenter(sun.getCenter()));
 
-		return sunHalo;
+		return halo;
 	}
 }

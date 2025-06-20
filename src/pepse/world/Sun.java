@@ -10,52 +10,44 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 /**
- * This class creates a sun object that rotates in the sky in a circular path over time.
+ * A utility class for creating the sun GameObject, which moves in a circular path
+ * to simulate a day-night cycle.
  */
 public class Sun {
-
 	private static final String SUN_TAG = "sun";
-	private static final float SUN_DIAMETER = 70f;
+	private static final float SUN_DIAMETER = 100f;
+	private static final float ORBIT_RADIUS = 300f;
 	private static final Color SUN_COLOR = Color.YELLOW;
-	private static final float SUN_ORBIT_RADIUS = 300f;
-	private static final float INITIAL_ANGLE = 0f;
-	private static final float FINAL_ANGLE = 360f;
 
 	/**
-	 * Creates a sun GameObject that moves in a circular path to simulate a day-night cycle.
+	 * Creates a GameObject representing the sun.
 	 *
-	 * @param windowDimensions The dimensions of the window.
-	 * @param cycleLength      Total duration (in seconds) of a full sun rotation.
-	 * @return A sun GameObject.
+	 * @param windowDimensions The dimensions of the game window.
+	 * @param cycleLength      The time (in seconds) of a full sun rotation cycle.
+	 * @return A GameObject representing the sun.
 	 */
 	public static GameObject create(Vector2 windowDimensions, float cycleLength) {
-		Vector2 sunOrbitCenter = new Vector2(
+		Vector2 center = new Vector2(
 				windowDimensions.x() / 2f,
-				windowDimensions.y() / 2f
+				windowDimensions.y() / 3f
 		);
-		Vector2 initialSunCenter = new Vector2(
-				sunOrbitCenter.x(),
-				sunOrbitCenter.y() - SUN_ORBIT_RADIUS
-		);
+		Vector2 startPoint = center.subtract(new Vector2(0, ORBIT_RADIUS));
 
-		Renderable sunRenderable = new OvalRenderable(SUN_COLOR);
+		Renderable renderable = new OvalRenderable(SUN_COLOR);
 		GameObject sun = new GameObject(Vector2.ZERO,
-				new Vector2(SUN_DIAMETER, SUN_DIAMETER), sunRenderable);
+				new Vector2(SUN_DIAMETER, SUN_DIAMETER),
+				renderable);
+
 		sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		sun.setTag(SUN_TAG);
-		sun.setCenter(initialSunCenter);
+		sun.setCenter(startPoint);
 
-		// Transition to rotate the sun around the center
 		new Transition<>(
 				sun,
-				angle -> sun.setCenter(
-						initialSunCenter
-								.subtract(sunOrbitCenter)
-								.rotated(angle)
-								.add(sunOrbitCenter)
-				),
-				INITIAL_ANGLE,
-				FINAL_ANGLE,
+				angle -> sun.setCenter(startPoint.subtract(center)
+						.rotated(angle).add(center)),
+				0f,
+				360f,
 				Transition.LINEAR_INTERPOLATOR_FLOAT,
 				cycleLength,
 				Transition.TransitionType.TRANSITION_LOOP,

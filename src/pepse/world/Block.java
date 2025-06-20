@@ -6,22 +6,21 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 /**
- * Represents a single block in the terrain.
- * Blocks are immovable game objects with fixed size and rendering.
+ * Represents a single terrain block in the game world.
+ * Each block is a square with fixed size and immovable physics.
  */
 public class Block extends GameObject {
-
-	/** Fixed block size in pixels. */
-	public static final int SIZE = 30;
+	/** The fixed size of each block (in pixels). */
+	public static final int BLOCK_SIZE = 30;
 
 	/**
-	 * Constructs a block at the specified top-left corner with the given renderable.
+	 * Constructs a new block at the given top-left corner, with the specified renderable.
 	 *
-	 * @param topLeftCorner The top-left corner of the block.
-	 * @param renderable    The visual appearance of the block.
+	 * @param topLeftCorner The top-left position of the block.
+	 * @param renderable    The visual representation of the block.
 	 */
 	public Block(Vector2 topLeftCorner, Renderable renderable) {
-		super(topLeftCorner, Vector2.ONES.mult(SIZE), renderable);
+		super(topLeftCorner, Vector2.ONES.mult(BLOCK_SIZE), renderable);
 		physics().preventIntersectionsFromDirection(Vector2.ZERO);
 		physics().setMass(GameObjectPhysics.IMMOVABLE_MASS);
 	}
