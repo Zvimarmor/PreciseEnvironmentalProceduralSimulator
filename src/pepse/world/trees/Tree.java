@@ -24,7 +24,7 @@ public class Tree {
 	private static final int MIN_TRUNK_HEIGHT = 150;
 	private static final int MAX_TRUNK_HEIGHT = 200;
 	private static final Vector2 LEAF_SPREAD_DIMENSION = new Vector2(150, 200);
-	private static final float LEAF_PROBABILITY = 0.8f;
+	private static final float LEAF_PROBABILITY = 0.9f;
 	private static final float FRUIT_PROBABILITY = 0.2f;
 
 	/**

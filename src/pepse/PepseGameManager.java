@@ -12,7 +12,7 @@ import danogl.util.Vector2;
 
 import pepse.world.*;
 import pepse.world.daynight.Night;
-import pepse.world.trees.Forest;
+import pepse.world.trees.Flora;
 import pepse.world.weather.CloudsManager;
 
 import java.util.List;
@@ -90,9 +90,9 @@ public class PepseGameManager extends GameManager {
 		EnergyPanel energyPanel = new EnergyPanel(gameObjects(), avatar::getEnergy);
 		gameObjects().addGameObject(energyPanel, Layer.UI);
 
-		// ---------- Forest ----------
-		Forest.createForest(0, (int) windowDimensions.x(),
-				terrain, gameObjects(), Layer.STATIC_OBJECTS);
+		// ---------- Flora ----------
+		Flora flora = new Flora(terrain, gameObjects(), Layer.STATIC_OBJECTS);
+		flora.createInRange(0, (int) windowDimensions.x());
 
 		// ---------- Clouds + Rain ----------
 		CloudsManager cloudsManager = new CloudsManager(
