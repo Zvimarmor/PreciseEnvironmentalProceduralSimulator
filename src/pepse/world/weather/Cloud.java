@@ -18,8 +18,17 @@ import java.util.List;
  */
 public class Cloud {
 	private static final Color BASE_CLOUD_COLOR = new Color(255, 255, 255);
-	private static final int CLOUD_SIZE = 30;
-	private static final float CLOUD_SPEED = 0.1f;
+	private static final int BLOCK_SIZE = 30;
+	private static final float CLOUD_SPEED_PX_PER_SEC = 0.1f;
+	private static final float CLOUD_TRAVEL_DISTANCE = 800f;
+
+	private static final List<List<Integer>> CLOUD_MATRIX = List.of(
+			List.of(0, 1, 1, 0, 0, 0),
+			List.of(1, 1, 1, 1, 1, 1),
+			List.of(1, 1, 1, 1, 1, 1),
+			List.of(0, 1, 1, 1, 0, 0),
+			List.of(0, 0, 0, 0, 0, 0)
+	);
 
 	private final List<GameObject> cloudBlocks;
 	private final Vector2 initialTopLeft;
@@ -35,69 +44,8 @@ public class Cloud {
 		this.initialTopLeft = topLeftCorner;
 		this.cloudBlocks = new ArrayList<>();
 
-		List<List<Integer>> cloudMatrix = List.of(
-				List.of(0, 1, 1, 0, 0, 0),
-				List.of(1, 1, 1, 1, 1, 1),
-				List.of(1, 1, 1, 1, 1, 1),
-				List.of(0, 1, 1, 1, 0, 0),
-				List.of(0, 0, 0, 0, 0, 0)
-		);
-
-		// Create cloud pixels based on matrix definition
-		for (int row = 0; row < cloudMatrix.size(); row++) {
-			for (int col = 0; col < cloudMatrix.get(row).size(); col++) {
-				if (cloudMatrix.get(row).get(col) == 1) {
-					Vector2 blockPos = topLeftCorner.add(new Vector2(col * CLOUD_SIZE, row * CLOUD_SIZE));
-					GameObject block = new GameObject(
-							blockPos,
-							Vector2.ONES.mult(CLOUD_SIZE),
-							new RectangleRenderable(ColorSupplier.approximateMonoColor(BASE_CLOUD_COLOR)));
-					block.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-					gameObjects.addGameObject(block, layer);
-					cloudBlocks.add(block);
-				}
-			}
-		}
-
-		float startX = topLeftCorner.x();
-		float endX = startX + 800;
-		float duration = (endX - startX) / CLOUD_SPEED;
-
-		GameObject scheduler = new GameObject(Vector2.ZERO, Vector2.ZERO, null);
-		scheduler.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-		gameObjects.addGameObject(scheduler, Layer.BACKGROUND);
-
-		// Move cloud blocks horizontally using Transition
-		new Transition<>(
-				scheduler,
-				x -> {
-					float deltaX = x - startX;
-					for (GameObject block : cloudBlocks) {
-						block.setTopLeftCorner(new Vector2(
-								block.getTopLeftCorner().x() + deltaX,
-								block.getTopLeftCorner().y()
-						));
-					}
-				},
-				startX,
-				endX,
-				Transition.LINEAR_INTERPOLATOR_FLOAT,
-				duration,
-				Transition.TransitionType.TRANSITION_LOOP,
-				null
-		);
-	}
-
-	/**
-	 * Returns the current center of the cloud.
-	 *
-	 * @return A Vector2 representing the center of the cloud.
-	 */
-	public Vector2 getCenter() {
-		if (!cloudBlocks.isEmpty()) {
-			return cloudBlocks.get(3).getCenter(); // Arbitrary block
-		}
-		return initialTopLeft;
+		createCloudBlocks(topLeftCorner, gameObjects, layer);
+		animateCloudMovement(topLeftCorner.x(), gameObjects);
 	}
 
 	/**
@@ -111,13 +59,13 @@ public class Cloud {
 		float maxX = Float.MIN_VALUE;
 		float maxY = Float.MIN_VALUE;
 
-		// Determine bounding box for the cloud
 		for (GameObject block : cloudBlocks) {
 			Vector2 topLeft = block.getTopLeftCorner();
-			Vector2 dimensions = block.getDimensions();
+			Vector2 size = block.getDimensions();
+
 			float blockMinX = topLeft.x();
-			float blockMaxX = topLeft.x() + dimensions.x();
-			float blockBottomY = topLeft.y() + dimensions.y();
+			float blockMaxX = blockMinX + size.x();
+			float blockBottomY = topLeft.y() + size.y();
 
 			minX = Math.min(minX, blockMinX);
 			maxX = Math.max(maxX, blockMaxX);
@@ -126,5 +74,52 @@ public class Cloud {
 
 		float centerX = (minX + maxX) / 2f;
 		return new Vector2(centerX, maxY);
+	}
+
+	// Adds all cloud pixels to the game world based on the matrix
+	private void createCloudBlocks(Vector2 topLeftCorner, GameObjectCollection gameObjects, int layer) {
+		for (int row = 0; row < CLOUD_MATRIX.size(); row++) {
+			for (int col = 0; col < CLOUD_MATRIX.get(row).size(); col++) {
+				if (CLOUD_MATRIX.get(row).get(col) == 1) {
+					Vector2 blockPos = topLeftCorner.add(
+							new Vector2(col * BLOCK_SIZE, row * BLOCK_SIZE));
+					GameObject block = new GameObject(
+							blockPos,
+							Vector2.ONES.mult(BLOCK_SIZE),
+							new RectangleRenderable(ColorSupplier.approximateMonoColor(BASE_CLOUD_COLOR)));
+
+					block.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+					gameObjects.addGameObject(block, layer);
+					cloudBlocks.add(block);
+				}
+			}
+		}
+	}
+
+	// Schedules continuous movement of the cloud blocks to the right
+	private void animateCloudMovement(float startX, GameObjectCollection gameObjects) {
+		float endX = startX + CLOUD_TRAVEL_DISTANCE;
+		float duration = (endX - startX) / CLOUD_SPEED_PX_PER_SEC;
+
+		GameObject scheduler = new GameObject(Vector2.ZERO, Vector2.ZERO, null);
+		scheduler.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+		gameObjects.addGameObject(scheduler, Layer.BACKGROUND);
+
+		new Transition<>(
+				scheduler,
+				x -> {
+					float deltaX = x - startX;
+					for (GameObject block : cloudBlocks) {
+						Vector2 oldPos = block.getTopLeftCorner();
+						block.setTopLeftCorner(new Vector2(oldPos.x() + deltaX, oldPos.y()));
+					}
+				},
+				startX,
+				endX,
+				Transition.LINEAR_INTERPOLATOR_FLOAT,
+				duration,
+				Transition.TransitionType.TRANSITION_LOOP,
+				null
+		);
 	}
 }

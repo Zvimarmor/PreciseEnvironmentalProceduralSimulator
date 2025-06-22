@@ -11,7 +11,10 @@ import danogl.gui.WindowController;
 import danogl.util.Vector2;
 
 import pepse.world.*;
+import pepse.world.UI.EnergyPanel;
 import pepse.world.daynight.Night;
+import pepse.world.daynight.Sun;
+import pepse.world.daynight.SunHalo;
 import pepse.world.trees.Flora;
 import pepse.world.weather.CloudsManager;
 
@@ -24,10 +27,10 @@ import java.util.Random;
  */
 public class PepseGameManager extends GameManager {
 
-	/** The seed used for deterministic terrain generation */
+	//The seed used for deterministic terrain generation.
 	private static int terrainSeed;
 
-	/** Duration (in seconds) of a full day-night cycle */
+	//Duration of a full day-night cycle
 	private static final float CYCLE_LENGTH = 30f;
 
 	/**

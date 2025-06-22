@@ -17,6 +17,9 @@ public class Night {
 
 	private static final float MIDNIGHT_OPACITY = 0.5f;
 	private static final String NIGHT_TAG = "night";
+	private static final Color NIGHT_COLOR = Color.BLACK;
+	private static final float FULL_OPACITY = 0f;
+	private static final float CYCLE_DIVISOR = 2f;
 
 	/**
 	 * Creates a GameObject that darkens the screen cyclically.
@@ -26,7 +29,7 @@ public class Night {
 	 * @return A GameObject representing the night overlay.
 	 */
 	public static GameObject create(Vector2 windowDimensions, float cycleLength) {
-		Renderable renderable = new RectangleRenderable(Color.BLACK);
+		Renderable renderable = new RectangleRenderable(NIGHT_COLOR);
 		GameObject night = new GameObject(Vector2.ZERO, windowDimensions, renderable);
 		night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 		night.setTag(NIGHT_TAG);
@@ -34,10 +37,10 @@ public class Night {
 		new Transition<>(
 				night,
 				night.renderer()::setOpaqueness,
-				0f,
+				FULL_OPACITY,
 				MIDNIGHT_OPACITY,
 				Transition.CUBIC_INTERPOLATOR_FLOAT,
-				cycleLength / 2,
+				cycleLength / CYCLE_DIVISOR,
 				Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
 				null
 		);

@@ -9,7 +9,10 @@ import java.util.Random;
  * A class responsible for planting trees in a forest-like pattern across a horizontal range.
  */
 public class Flora {
+	/** Probability for planting a tree at each interval. */
 	private static final float TREE_PLANT_PROBABILITY = 0.1f;
+
+	/** Distance between tree planting positions (in pixels). */
 	private static final int TREE_DISTANCE = 30;
 
 	private final Terrain terrain;
