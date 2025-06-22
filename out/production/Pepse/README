@@ -1,22 +1,22 @@
-zvi.marmor,
-206949539,
+zvi.marmor,adi_zuarets
+206949539,208708925
 
 9.2.4: Implementation explanation for the 'trees' module:
 - 9.2.4.1: Classes used:
-  - Forest: coordinates tree creation in a given range.
+  - Flora: coordinates tree creation in a given range.
   - Tree: generates a single tree (trunk, leaves, fruits).
   - Leaf: animated swaying leaves.
   - Fruit: collectible, respawns over time.
 
 - 9.2.4.2: Class relationships:
-  - Forest calls Tree.create(...) for each position.
+  - Flora calls Tree.create for each position to create tree in it.
   - Tree adds Leaf and Fruit objects to GameObjectCollection.
   - Leaves and fruits are placed randomly around the trunk.
 
 - 9.2.4.3: Design pattern:
-  - We used a component-based approach and observer pattern.
-  - CloudsManager implements JumpObserver and listens to Avatar.
-  - When avatar jumps, CloudsManager gets notified and triggers rain.
-    (Rain is triggered using a repeating ScheduledTask that creates falling droplets
-    from the current cloud position.)
+We designed the tree-related classes using a modular and compositional approach.
+Each Tree is built by combining smaller components - trunk blocks, Leaf objects,
+and Fruit objects - each with its own logic and appearance.
+(Separately, in the weather package, the CloudsManager class uses the Observer pattern:
+Using the JumpObserver it gets notified by the Avatar when a jump occurs, causing the rain effect.)
 
